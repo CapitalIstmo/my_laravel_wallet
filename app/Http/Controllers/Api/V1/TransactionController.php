@@ -18,7 +18,7 @@ class TransactionController extends Controller
      */
     public function index(Request $request)
     {
-        return DB::table('transactions')->where('payable_id', $request->id)->orderBy('id', 'desc')->get();
+        return TransactionResource::collection(DB::table('transactions')->where('payable_id', $request->id)->orderBy('id', 'desc')->get());
     }
 
     /**
