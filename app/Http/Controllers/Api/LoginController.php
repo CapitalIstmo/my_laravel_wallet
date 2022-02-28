@@ -32,7 +32,9 @@ class LoginController extends Controller
         } else {
             return response()->json([
                 'success' => false,
+                'token' => null,
                 'message' => 'Usuario y/o Contraseña no Valido.',
+                'data' => null
             ], 401);
         }
     }
