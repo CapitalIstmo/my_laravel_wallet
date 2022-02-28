@@ -73,10 +73,10 @@ class TransactionController extends Controller
             //'token' => 'required',
             'id_bussiness' => 'required',
             'id_payer' => 'required',
-            'amount' => 'required'
+            'amount' => 'required',
         ];
 
-        $input = $request->only('id_bussiness', 'id_payer','amount');
+        $input = $request->only('id_bussiness', 'id_payer', 'amount');
 
         $validator = Validator::make($input, $rules);
 
@@ -99,13 +99,13 @@ class TransactionController extends Controller
                 //SI BALANCE ES MAYOR QUE PAGO OK
                 if ($bussiness->getKey() !== $payer->getKey()) {
                     //REALIZAMOS EL TRANSFER
-                    if($payer->balance > 0){
+                    if ($payer->balance > 0) {
                         $payer->transfer($bussiness, $request->amount);
                         return response()->json([
                             'success' => true,
                             'message' => 'Pay Success',
                         ]);
-                    }else{
+                    } else {
                         return response()->json([
                             'success' => false,
                             'message' => 'Balance not available.',
@@ -120,13 +120,27 @@ class TransactionController extends Controller
                     ]);
                 }
 
-
             } else {
                 return response()->json([
                     'success' => false,
                     'message' => 'Bussiness or Payer Not Valid',
                 ]);
             }
+        }
+    }
+
+    public function makeOrderPay(Request $request)
+    {
+        if ($request->amount != null && $request->id_bussiness != null) {
+            return response()->json([
+                'success' => true,
+                'order' => base64_encode($request->amount)."|".base64_encode($request->id_bussiness),
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Bussiness or Payer Not Valid',
+            ]);
         }
     }
 }

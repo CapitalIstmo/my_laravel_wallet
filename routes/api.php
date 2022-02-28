@@ -43,4 +43,7 @@ Route::post('v1/users/myBalance', [UserV1::class, 'myBalance'])->middleware('aut
 Route::post('v1/users/viewMyTransactions', [TransactionV1::class, 'index'])->middleware('auth:sanctum');
 
 //REALIZAR TRANSFERENCIA
-Route::post('v1/users/makeTransfer', [TransactionV1::class, 'makeTransfer'])->middleware('auth:sanctum');
+Route::post('v1/transactions/makeTransfer', [TransactionV1::class, 'makeTransfer'])->middleware('auth:sanctum');
+
+//REALIZAR TRANSFERENCIA
+Route::post('v1/transactions/makeOrderPay', [TransactionV1::class, 'makeOrderPay'])->middleware('auth:sanctum');
