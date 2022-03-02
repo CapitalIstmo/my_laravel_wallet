@@ -18,10 +18,11 @@ class RegisterController extends Controller
             'name' => 'required',
             'email' => 'unique:users|required',
             'password' => 'required',
-            'type_user' => 'required',
+            'phone' => 'required',
+            'type_doc' => 'required',
         ];
 
-        $input = $request->only('name', 'email', 'password', 'type_user');
+        $input = $request->all();
 
         $validator = Validator::make($input, $rules);
 
@@ -30,7 +31,14 @@ class RegisterController extends Controller
         } else {
 
             // CREAMOS NUEVO TOKEN
-            $myUserCreate = User::create(['name' => $request->name, 'email' => $request->email, 'password' => Hash::make($request->password), 'type_user' => 'U']);
+            $myUserCreate = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'type_user' => 'U',
+                'phone' => $request->phone,
+                'type_doc' => $request->type_doc
+            ]);
 
             //CREAMOS NOMBRE DE LA NUEVA WALLET
             //$nombreNuevaWallet = 'my-wallet-' . Str::slug($myUserCreate->name, "-") . "-" . $myUserCreate->id;
@@ -42,7 +50,7 @@ class RegisterController extends Controller
 
             $myUserCreate->deposit(1000);
 
-            if (Auth::attempt($request->only('name', 'email', 'password', 'type_user'))) {
+            if (Auth::attempt($request->all())) {
                 return response()->json([
                     'success' => true,
                     'token' => $request->user()->createToken($myUserCreate->email)->plainTextToken,
