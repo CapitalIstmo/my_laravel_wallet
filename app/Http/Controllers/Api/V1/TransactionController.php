@@ -86,9 +86,9 @@ class TransactionController extends Controller
         } else {
 
             //VERIFICAMOS QUE SEAN VALIDOS
-            $theBussiness = DB::table('users')->where(['id' => $request->id_bussiness, 'type_user' => 'E'])->first();
+            $theBussiness = DB::table('users')->where(['id' => $request->id_bussiness])->first();
 
-            $thePayer = DB::table('users')->where(['id' => $request->id_payer, 'type_user' => 'U'])->first();
+            $thePayer = DB::table('users')->where(['id' => $request->id_payer])->first();
 
             if ($theBussiness != null && $thePayer != null) {
                 //CONSULTAMOS EL BALANCE DEL PAGADOR
@@ -99,7 +99,7 @@ class TransactionController extends Controller
                 //SI BALANCE ES MAYOR QUE PAGO OK
                 if ($bussiness->getKey() !== $payer->getKey()) {
                     //REALIZAMOS EL TRANSFER
-                    if ($payer->balance > 0) {
+                    if ($payer->balance > $request->amount) {
                         $payer->transfer($bussiness, $request->amount);
                         return response()->json([
                             'success' => true,
@@ -108,7 +108,7 @@ class TransactionController extends Controller
                     } else {
                         return response()->json([
                             'success' => false,
-                            'message' => 'Balance not available.',
+                            'message' => 'Tu balance no alcanza para esta operación.',
                         ]);
                     }
                 } else {
