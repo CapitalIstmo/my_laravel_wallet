@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\PassportServiceProvider;
+use App\Passport\Passport;
 
 class AppServiceProvider extends ServiceProvider
 {

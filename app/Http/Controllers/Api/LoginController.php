@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -24,17 +23,48 @@ class LoginController extends Controller
 
             return response()->json([
                 'success' => true,
-                'token' => $request->user()->createToken($request->email)->plainTextToken,
+                'token' => $request->user()->createToken($request->email,['user'])->plainTextToken,
                 'message' => 'Success',
                 //'name_wallet' => $nombreNuevaWallet,
-                'data' => $user
+                'data' => $user,
             ]);
         } else {
             return response()->json([
                 'success' => false,
                 'token' => null,
                 'message' => 'Usuario y/o Contraseña no Valido.',
-                'data' => null
+                'data' => null,
+            ], 401);
+        }
+    }
+
+    public function loginadmin(Request $request)
+    {
+        if ($request->email != "" || $request->password != "") {
+            if (DB::table('users')->where(['email' => $request->email, 'type_user' => 'SA'])->exists()) {
+                if (Auth::attempt($request->only('email', 'password'))) {
+
+                    return response()->json([
+                        'success' => true,
+                        'token' => $request->user()->createToken($request->email,['admin'])->plainTextToken,
+                        'message' => 'Login Valid and Token Generate.'
+                    ],200);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'User or Password not Valid.',
+                    ], 401);
+                }
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User SuperAdmin Not Found.',
+                ], 401);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Params not Valid.',
             ], 401);
         }
     }

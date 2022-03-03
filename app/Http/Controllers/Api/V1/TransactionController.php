@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\TransactionResource;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Library\ApiHelpers;
 
 class TransactionController extends Controller
 {
+
+    use ApiHelpers; // <---- Using the apiHelpers Trait
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +22,11 @@ class TransactionController extends Controller
      */
     public function index(Request $request)
     {
-        return TransactionResource::collection(DB::table('transactions')->where('payable_id', $request->id)->orderBy('id', 'desc')->get());
+        if ($this->isAdmin($request->user())) {
+            return TransactionResource::collection(Transaction::latest()->paginate(15));
+        }
+
+        return $this->onError(401, 'Unauthorized Access only for admin');return TransactionResource::collection(DB::table('transactions')->where('payable_id', $request->id)->orderBy('id', 'desc')->get());
     }
 
     /**
@@ -134,7 +142,7 @@ class TransactionController extends Controller
         if ($request->amount != null && $request->id_bussiness != null) {
             return response()->json([
                 'success' => true,
-                'order' => base64_encode($request->amount)."|".base64_encode($request->id_bussiness),
+                'order' => base64_encode($request->amount) . "|" . base64_encode($request->id_bussiness),
             ]);
         } else {
             return response()->json([
@@ -142,5 +150,10 @@ class TransactionController extends Controller
                 'message' => 'Bussiness or Payer Not Valid',
             ]);
         }
+    }
+
+    public function viewMyTransactions(Request $request)
+    {
+        return TransactionResource::collection(DB::table('transactions')->where('payable_id', $request->id)->orderBy('id', 'desc')->get());
     }
 }

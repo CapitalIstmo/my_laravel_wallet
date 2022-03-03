@@ -16,10 +16,16 @@ class TransactionResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'amount' => $this->amount,
+            'payable_type' => $this->payable_type,
+            'payable_id' => $this->payable_id,
+            'wallet_id' => $this->wallet_id,
             'type' => $this->type,
+            'amount' => $this->amount,
             'confirmed' => $this->confirmed,
+            'meta' => $this->meta,
+            'uuid' => $this->uuid,
             'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }
