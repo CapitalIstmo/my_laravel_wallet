@@ -37,9 +37,33 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        if ($request->id != "") {
+            $count = User::where('id', '=', $request->id)->count();
+
+            if ($count > 0) {
+                $user = User::find($request->id);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'The user is found',
+                    'data' => $user->name,
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User Not Found',
+                    'data' => '',
+                ]);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Params not Valid',
+                'data' => '',
+            ]);
+        }
     }
 
     /**

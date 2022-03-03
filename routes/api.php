@@ -47,3 +47,6 @@ Route::post('v1/transactions/makeTransfer', [TransactionV1::class, 'makeTransfer
 
 //REALIZAR TRANSFERENCIA
 Route::post('v1/transactions/makeOrderPay', [TransactionV1::class, 'makeOrderPay'])->middleware('auth:sanctum');
+
+//REALIZAR TRANSFERENCIA
+Route::post('v1/users/getUser', [UserV1::class, 'show'])->middleware('auth:sanctum');
