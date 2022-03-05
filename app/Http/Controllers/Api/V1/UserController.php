@@ -3,13 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\UserCollection;
+use App\Http\Library\ApiHelpers;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Library\ApiHelpers;
 
 class UserController extends Controller
 {
@@ -115,30 +114,64 @@ class UserController extends Controller
 
     public function encontrarUsuario(Request $request)
     {
-        if ($request->id != "") {
-            $count = User::where('id', '=', $request->id)->count();
+        if ($this->isAdmin($request->user())) {
+            if ($request->type_search != "" || $request->data != "") {
 
-            if ($count > 0) {
-                $user = User::find($request->id);
+                switch ($request->type_search) {
+                    case 'ID':
+                        # code...
+                        $count = User::where('id', '=', $request->data)->count();
+                        break;
+                    case 'EMAIL':
+                        # code...
+                        $count = User::where('email', '=', $request->data)->count();
+                        break;
+                    case 'PHONE':
+                        # code...
+                        $count = User::where('phone', '=', $request->data)->count();
+                        break;
+                }
 
-                return response()->json([
-                    'success' => true,
-                    'message' => 'The user is found',
-                    'data' => $user->name,
-                ]);
+                if ($count > 0) {
+
+                    $user = ";";
+
+                    switch ($request->type_search) {
+                        case 'ID':
+                            # code...
+                            $user = DB::table('users')->where('id', '=', $request->data)->get(['id','name','email','type_user','phone','type_doc','email_verified_at','created_at']);
+                            break;
+                        case 'EMAIL':
+                            # code...
+                            $user = DB::table('users')->where('email', '=', $request->data)->get(['id','name','email','type_user','phone','type_doc','email_verified_at','created_at']);
+                            break;
+                        case 'PHONE':
+                            # code...
+                            $user = DB::table('users')->where('phone', '=', $request->data)->get(['id','name','email','type_user','phone','type_doc','email_verified_at','created_at']);
+                            break;
+                    }
+
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'The user is found',
+                        'data' => $user,
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'User Not Found',
+                        'data' => '',
+                    ]);
+                }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'User Not Found',
+                    'message' => 'Params not Valid',
                     'data' => '',
                 ]);
             }
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Params not Valid',
-                'data' => '',
-            ]);
         }
+        return $this->onError(401, 'Unauthorized Access only for admin');
+
     }
 }
