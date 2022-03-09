@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//Route::get('/depositar', [UserController::class, 'depositar']);
+Route::get('/depositar', [UserController::class, 'depositar']);
 
 //Route::get('/transferir', [UserController::class, 'transferir']);
 

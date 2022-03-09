@@ -20,10 +20,10 @@ class UserController extends Controller
     public function depositar()
     {
         //OBTENEMOS EL USUARIO
-        $user = User::first();
+        $user = User::find(10);
 
         //SE LE PUEDE DEPOSITAR
-        $user->deposit(10);
+        $user->deposit(50000);
 
         //IMPRIMIMOS EL OBJETO
         dd($user->balance); // 0

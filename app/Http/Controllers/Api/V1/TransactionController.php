@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Library\ApiHelpers;
 use App\Http\Resources\V1\TransactionResource;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Library\ApiHelpers;
 
 class TransactionController extends Controller
 {
@@ -155,5 +155,57 @@ class TransactionController extends Controller
     public function viewMyTransactions(Request $request)
     {
         return TransactionResource::collection(DB::table('transactions')->where('payable_id', $request->id)->orderBy('id', 'desc')->get());
+    }
+
+    public function makeTransferByPhone(Request $request)
+    {
+        if ($request->phone != "" && $request->amount != "" && $request->id_payer != "") {
+
+            $theDestiny = DB::table('users')->where(['phone' => $request->phone])->first();
+
+            $theBussiness = DB::table('users')->where(['id' => $request->id_payer])->first();
+
+            if ($theDestiny != null && $theBussiness != null) {
+
+                $bussiness = User::find($theDestiny->id);
+
+                $payer = User::find($request->id_payer);
+
+                //SI BALANCE ES MAYOR QUE PAGO OK
+                if ($bussiness->getKey() !== $payer->getKey()) {
+                    //REALIZAMOS EL TRANSFER
+                    if ($payer->balance > $request->amount) {
+                        $payer->transfer($bussiness, $request->amount);
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Pay Success',
+                        ]);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Tu balance no alcanza para esta operación.',
+                        ]);
+                    }
+                } else {
+                    // SI NO, VALIO CHETOS.
+                    //MOSTRAMOS ERROR
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Operation not Valid',
+                    ]);
+                }
+
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Destiny not found.',
+                ]);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Params not valid.',
+            ]);
+        }
     }
 }
