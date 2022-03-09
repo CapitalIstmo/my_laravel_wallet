@@ -18,7 +18,7 @@ class RegisterController extends Controller
             'name' => 'required',
             'email' => 'unique:users|required',
             'password' => 'required',
-            'phone' => 'required',
+            'phone' => 'unique:users|required',
             'type_doc' => 'required',
         ];
 
@@ -27,7 +27,12 @@ class RegisterController extends Controller
         $validator = Validator::make($input, $rules);
 
         if ($validator->fails()) {
-            return response()->json(['success' => false, 'error' => $validator->getMessageBag()]);
+            //var_dump($validator->errors()->all());
+            $text = "";
+            foreach ($validator->errors()->all() as $error) {
+                $text .= $error." \n ";
+            }
+            return response()->json(['success' => false, 'error' => $validator->errors()->all()],400);
         } else {
 
             // CREAMOS NUEVO TOKEN
