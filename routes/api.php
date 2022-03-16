@@ -60,5 +60,8 @@ Route::post('v1/transactions/makeOrderPay', [TransactionV1::class, 'makeOrderPay
 //OBTENER USUARIO POR FILTRO
 Route::post('v1/users/getUser', [UserV1::class, 'encontrarUsuario'])->middleware('auth:sanctum');
 
+//EDITAR PERFIL DE USUARIO
+Route::post('v1/users/editarPerfil', [UserV1::class, 'editarPerfil'])->middleware('auth:sanctum');
+
 //REALIZAR TRANSFERENCIA CON NUMERO DE TELEFONO
 Route::post('v1/transactions/makeTransferByPhone', [TransactionV1::class, 'makeTransferByPhone'])->middleware('auth:sanctum');

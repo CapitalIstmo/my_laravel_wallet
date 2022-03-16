@@ -174,4 +174,9 @@ class UserController extends Controller
         return $this->onError(401, 'Unauthorized Access only for admin');
 
     }
+
+    public function editarPerfil()
+    {
+
+    }
 }
