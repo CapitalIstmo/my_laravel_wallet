@@ -139,15 +139,15 @@ class UserController extends Controller
                     switch ($request->type_search) {
                         case 'ID':
                             # code...
-                            $user = DB::table('users')->where('id', '=', $request->data)->get(['id', 'name', 'email', 'type_user', 'phone', 'type_doc', 'email_verified_at', 'created_at']);
+                            $user = DB::table('users')->where('id', '=', $request->data)->get();
                             break;
                         case 'EMAIL':
                             # code...
-                            $user = DB::table('users')->where('email', '=', $request->data)->get(['id', 'name', 'email', 'type_user', 'phone', 'type_doc', 'email_verified_at', 'created_at']);
+                            $user = DB::table('users')->where('email', '=', $request->data)->get();
                             break;
                         case 'PHONE':
                             # code...
-                            $user = DB::table('users')->where('phone', '=', $request->data)->get(['id', 'name', 'email', 'type_user', 'phone', 'type_doc', 'email_verified_at', 'created_at']);
+                            $user = DB::table('users')->where('phone', '=', $request->data)->get();
                             break;
                     }
 
