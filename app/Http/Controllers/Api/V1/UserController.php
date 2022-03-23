@@ -139,15 +139,15 @@ class UserController extends Controller
                     switch ($request->type_search) {
                         case 'ID':
                             # code...
-                            $user = DB::table('users')->where('id', '=', $request->data)->get(['id','name','email','type_user','phone','type_doc','email_verified_at','created_at']);
+                            $user = DB::table('users')->where('id', '=', $request->data)->get(['id', 'name', 'email', 'type_user', 'phone', 'type_doc', 'email_verified_at', 'created_at']);
                             break;
                         case 'EMAIL':
                             # code...
-                            $user = DB::table('users')->where('email', '=', $request->data)->get(['id','name','email','type_user','phone','type_doc','email_verified_at','created_at']);
+                            $user = DB::table('users')->where('email', '=', $request->data)->get(['id', 'name', 'email', 'type_user', 'phone', 'type_doc', 'email_verified_at', 'created_at']);
                             break;
                         case 'PHONE':
                             # code...
-                            $user = DB::table('users')->where('phone', '=', $request->data)->get(['id','name','email','type_user','phone','type_doc','email_verified_at','created_at']);
+                            $user = DB::table('users')->where('phone', '=', $request->data)->get(['id', 'name', 'email', 'type_user', 'phone', 'type_doc', 'email_verified_at', 'created_at']);
                             break;
                     }
 
@@ -175,8 +175,61 @@ class UserController extends Controller
 
     }
 
-    public function editarPerfil()
+    public function editarPerfil(Request $request)
     {
 
+        $verificarSiHayCambioDeCorreo = User::find($request->id);
+
+        if($verificarSiHayCambioDeCorreo->email == $request->email && $verificarSiHayCambioDeCorreo->phone == $request->phone){
+            $rules = [
+                'name' => 'required',
+                'email' => 'required',
+                //'password' => 'required',
+                'phone' => 'required',
+                'type_doc' => 'required',
+                'numeral' => 'required',
+                'id' => 'required',
+            ];
+        }else{
+            $rules = [
+                'name' => 'required',
+                'email' => 'unique:users|required',
+                //'password' => 'required',
+                'phone' => 'unique:users|required',
+                'type_doc' => 'required',
+                'numeral' => 'required',
+                'id' => 'required',
+            ];
+        }
+
+
+        $input = $request->all();
+
+        $validator = Validator::make($input, $rules);
+
+        if ($validator->fails()) {
+            //var_dump($validator->errors()->all());
+            $text = "";
+            foreach ($validator->errors()->all() as $error) {
+                $text .= $error . " \n ";
+            }
+            return response()->json(['success' => false, 'error' => $validator->errors()->all()], 400);
+        } else {
+
+            // CREAMOS NUEVO TOKEN
+            $myUserEdit = User::find($request->id);
+            $myUserEdit->name = $request->name;
+            $myUserEdit->email = $request->email;
+            $myUserEdit->phone = $request->phone;
+            $myUserEdit->type_doc = $request->type_doc;
+            $myUserEdit->numeral = $request->numeral;
+            $myUserEdit->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Usuario Editado',
+                'data' => $myUserEdit,
+            ]);
+        }
     }
 }
