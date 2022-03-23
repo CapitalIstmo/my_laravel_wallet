@@ -114,7 +114,7 @@ class UserController extends Controller
 
     public function encontrarUsuario(Request $request)
     {
-        if ($this->isAdmin($request->user())) {
+        if (!$this->isAdmin($request->user())) {
             if ($request->type_search != "" || $request->data != "") {
 
                 switch ($request->type_search) {
