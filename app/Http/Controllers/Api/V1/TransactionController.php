@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class TransactionController extends Controller
 {
@@ -199,6 +200,62 @@ class TransactionController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Destiny not found.',
+                ]);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Params not valid.',
+            ]);
+        }
+    }
+
+    public function makeDepositWithMoney(Request $request)
+    {
+        if ($request->amount != "" && $request->wallet_name != "" && $request->forceWallet != "" && $request->user_name != "") {
+            $thePerson = DB::table('users')->where(['name' => $request->user_name])->first();
+            if ($thePerson != null) {
+                $user = User::find($thePerson->id);
+                //echo $user->balance;
+
+                if ($user->hasWallet($request->wallet_name)) {
+                    $user->deposit($request->amount,['terminal_id' => $request->terminal_id, 'merchant_id' => $request->merchant_id]);
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Deposit Success',
+                        'transaction' => $user->wallet,
+                        'fecha' => date('Y-m-d'),
+                        'hora' => date('H:i:s'),
+                    ]);
+                } else {
+
+                    if ($request->forceWallet == "1") {
+                        $wallet = $user->createWallet([
+                            'name' => $request->wallet_name,
+                            'slug' => Str::slug($request->wallet_name, "-"),
+                        ]);
+
+                        $wallet->deposit($request->amount);
+
+                        return response()->json([
+                            'success' => true,
+                            'message' => 'Deposit Success',
+                            'transaction' => $wallet,
+                            'fecha' => date('Y-m-d'),
+                            'hora' => date('H:i:s'),
+                        ]);
+
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Name Wallet not found',
+                        ]);
+                    }
+                }
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found.',
                 ]);
             }
         } else {

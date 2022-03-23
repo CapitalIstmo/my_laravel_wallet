@@ -65,3 +65,6 @@ Route::post('v1/users/editarPerfil', [UserV1::class, 'editarPerfil'])->middlewar
 
 //REALIZAR TRANSFERENCIA CON NUMERO DE TELEFONO
 Route::post('v1/transactions/makeTransferByPhone', [TransactionV1::class, 'makeTransferByPhone'])->middleware('auth:sanctum');
+
+//REALIZAR DEPOSITO CON EFECTIVO
+Route::post('v1/transactions/makeDepositWithMoney', [TransactionV1::class, 'makeDepositWithMoney'])->middleware('auth:sanctum');
