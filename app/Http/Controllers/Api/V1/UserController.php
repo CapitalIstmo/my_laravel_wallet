@@ -8,6 +8,7 @@ use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -180,28 +181,29 @@ class UserController extends Controller
 
         $verificarSiHayCambioDeCorreo = User::find($request->id);
 
-        if($verificarSiHayCambioDeCorreo->email == $request->email && $verificarSiHayCambioDeCorreo->phone == $request->phone){
+        if ($verificarSiHayCambioDeCorreo->email == $request->email && $verificarSiHayCambioDeCorreo->phone == $request->phone) {
             $rules = [
                 'name' => 'required',
                 'email' => 'required',
                 //'password' => 'required',
                 'phone' => 'required',
                 'type_doc' => 'required',
+                'phoneCode' => 'required',
                 'numeral' => 'required',
                 'id' => 'required',
             ];
-        }else{
+        } else {
             $rules = [
                 'name' => 'required',
                 'email' => 'unique:users|required',
                 //'password' => 'required',
                 'phone' => 'unique:users|required',
                 'type_doc' => 'required',
+                'phoneCode' => 'required',
                 'numeral' => 'required',
                 'id' => 'required',
             ];
         }
-
 
         $input = $request->all();
 
@@ -217,13 +219,26 @@ class UserController extends Controller
         } else {
 
             // CREAMOS NUEVO TOKEN
-            $myUserEdit = User::find($request->id);
-            $myUserEdit->name = $request->name;
-            $myUserEdit->email = $request->email;
-            $myUserEdit->phone = $request->phone;
-            $myUserEdit->type_doc = $request->type_doc;
-            $myUserEdit->numeral = $request->numeral;
-            $myUserEdit->save();
+            if ($request->password != "") {
+                $myUserEdit = User::find($request->id);
+                $myUserEdit->name = $request->name;
+                $myUserEdit->email = $request->email;
+                $myUserEdit->phone = $request->phone;
+                $myUserEdit->type_doc = $request->type_doc;
+                $myUserEdit->password = Hash::make($request->password);
+                $myUserEdit->phoneCode = $request->phoneCode;
+                $myUserEdit->numeral = $request->numeral;
+                $myUserEdit->save();
+            } else {
+                $myUserEdit = User::find($request->id);
+                $myUserEdit->name = $request->name;
+                $myUserEdit->email = $request->email;
+                $myUserEdit->phone = $request->phone;
+                $myUserEdit->type_doc = $request->type_doc;
+                $myUserEdit->phoneCode = $request->phoneCode;
+                $myUserEdit->numeral = $request->numeral;
+                $myUserEdit->save();
+            }
 
             return response()->json([
                 'success' => true,
