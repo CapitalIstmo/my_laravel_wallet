@@ -22,6 +22,7 @@ class UserFactory extends Factory
             'phone' => $this->faker->e164PhoneNumber(),
             'phoneCode' => '+52',
             'type_doc' => 'CEDULA',
+            'numeral' => rand(10000, 99999),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ];
