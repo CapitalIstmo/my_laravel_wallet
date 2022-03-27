@@ -20,7 +20,7 @@ class RegisterController extends Controller
             'password' => 'required',
             'phone' => 'unique:users|required',
             'type_doc' => 'required',
-            'numeral' => 'required'
+            'numeral' => 'required',
         ];
 
         $input = $request->all();
@@ -42,6 +42,7 @@ class RegisterController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'type_user' => 'U',
+                'phoneCode' => $request->phoneCode,
                 'phone' => $request->phone,
                 'type_doc' => $request->type_doc,
                 'numeral' => $request->numeral
