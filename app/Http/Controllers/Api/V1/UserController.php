@@ -181,11 +181,10 @@ class UserController extends Controller
 
         $verificarSiHayCambioDeCorreo = User::find($request->id);
 
-        if ($verificarSiHayCambioDeCorreo->email == $request->email && $verificarSiHayCambioDeCorreo->phone == $request->phone) {
+        if ($verificarSiHayCambioDeCorreo->email == $request->email || $verificarSiHayCambioDeCorreo->phone == $request->phone) {
             $rules = [
                 'name' => 'required',
                 'email' => 'required',
-                //'password' => 'required',
                 'phone' => 'required',
                 'type_doc' => 'required',
                 'phoneCode' => 'required',
@@ -196,7 +195,6 @@ class UserController extends Controller
             $rules = [
                 'name' => 'required',
                 'email' => 'unique:users|required',
-                //'password' => 'required',
                 'phone' => 'unique:users|required',
                 'type_doc' => 'required',
                 'phoneCode' => 'required',
