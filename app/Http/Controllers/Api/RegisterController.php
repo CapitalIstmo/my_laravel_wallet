@@ -14,6 +14,7 @@ class RegisterController extends Controller
 {
     public function register(Request $request)
     {
+    try {
         $rules = [
             'name' => 'required',
             'email' => 'unique:users|required',
@@ -73,5 +74,12 @@ class RegisterController extends Controller
                 ], 401);
             }
         }
+    }
+    catch(\Throwable $th){
+        return response()->json([
+                    'status' => false,
+                    'message' => 'Internal Server error'
+                ], 500);
+    }
     }
 }
